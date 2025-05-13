@@ -78,9 +78,9 @@ def get_today_trade_count():
             if(trade["transactionType"] == 'SELL'):
                 total_sellQTY += trade["tradedQuantity"]
     
-    if(total_sellQTY == 300):
-        #print("DONE")
-        enable_kill_switch()
+    # if(total_sellQTY == 300):
+    #     #print("DONE")
+    #     enable_kill_switch()
         
 
 
@@ -102,7 +102,7 @@ while True:
         enable_kill_switch()
         disable_kill_switch()
         enable_kill_switch()
-        break
+        
 
 
 
