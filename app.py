@@ -99,7 +99,8 @@ while True:
     c = get_today_trade_count()
     p = get_daily_pnl()
     print("Today PNL:" , p )
-    if(total_sellQTY == 300 or p < 3900):
+    print("Total sell qty:" , total_sellQTY)
+    if(total_sellQTY >= 300 or p < -3900):
         enable_kill_switch()
         disable_kill_switch()
         enable_kill_switch()
