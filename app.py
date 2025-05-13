@@ -96,6 +96,75 @@ def get_today_trade_count():
         return 0
 
 
+
+#######################################################################################
+
+
+
+def get_positions():
+    url = f"{BASE_URL}/positions"
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error fetching positions:", response.text)
+        return []
+
+def place_order(order_data):
+    url = f"{BASE_URL}/orders"
+    response = requests.post(url, json=order_data, headers=HEADERS)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error placing order:", response.text)
+        return None
+
+def close_all_positions():
+    positions = get_positions()
+    #print("nabd")
+    if not positions:
+        print("No open positions.")
+        return
+
+    for pos in positions:
+        #print(pos)
+        net_qty = int(pos.get("netQty", 0))
+        print("Positions are already closed")
+        if net_qty != 0:
+            security_id = pos["securityId"]
+            trading_symbol = pos["tradingSymbol"]
+            product_type = pos["productType"]
+            exchange_segment = pos["exchangeSegment"]
+
+            print(f"Closing position for: {trading_symbol}, Qty: {net_qty}")
+
+            # Place opposite order to square off
+            order_data = {
+                "transactionType": "SELL" if net_qty > 0 else "BUY",
+                "securityId": security_id,
+                "quantity": abs(net_qty),
+                "orderType": "MARKET",
+                "productType": product_type,
+                "exchangeSegment": exchange_segment,
+                "orderValidity": "DAY",
+                "price": 0,
+                "tag": "AutoClose"
+            }
+
+            response = place_order(order_data)
+            print(f"Square-off response: {response}")
+            time.sleep(1)  # avoid rate limits
+
+
+
+
+
+
+
+
+
+
+
 while True:
     time.sleep(30)
     c = get_today_trade_count()
@@ -104,6 +173,8 @@ while True:
     print("Total sell qty:" , total_sellQTY)
     if(total_sellQTY >= 300 or p < -3900):
         if(count ==2):
+            close_all_positions()
+            time.sleep(15)
             # enable_kill_switch()
             # disable_kill_switch()
             # enable_kill_switch()
