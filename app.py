@@ -104,9 +104,9 @@ while True:
     print("Total sell qty:" , total_sellQTY)
     if(total_sellQTY >= 300 or p < -3900):
         if(count ==2):
-            enable_kill_switch()
-            disable_kill_switch()
-            enable_kill_switch()
+            # enable_kill_switch()
+            # disable_kill_switch()
+            # enable_kill_switch()
             count = 1
             
         else:
