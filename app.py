@@ -70,6 +70,7 @@ def get_daily_pnl():
 
 def get_today_trade_count():
     global total_sellQTY
+    total_sellQTY = 0
     url = f"{BASE_URL}/trades"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
