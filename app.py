@@ -1,7 +1,7 @@
 import requests
 import json
 
-ACCESS_TOKEN = ''
+ACCESS_TOKEN = os.environ['token']
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
     'access-token': ACCESS_TOKEN,
