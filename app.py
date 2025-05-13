@@ -166,12 +166,12 @@ def close_all_positions():
 
 
 while True:
-    time.sleep(30)
+    time.sleep(15)
     c = get_today_trade_count()
     p = get_daily_pnl()
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
-    if(total_sellQTY >= 300 or p < -3900):
+    if(total_sellQTY >= 3000 or p < -3900):
         if(count ==2):
             close_all_positions()
             time.sleep(15)
