@@ -1,5 +1,6 @@
 import os
 import requests
+import time
  
 
 ACCESS_TOKEN = os.environ['token']
@@ -96,6 +97,7 @@ def get_today_trade_count():
 
 
 while True:
+    time.sleep(30)
     c = get_today_trade_count()
     p = get_daily_pnl()
     print("Today PNL:" , p )
