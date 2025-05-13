@@ -11,7 +11,7 @@ HEADERS = {
 }
 
 total_sellQTY = 0 
-
+count = 1
 
 
 
@@ -103,9 +103,14 @@ while True:
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
     if(total_sellQTY >= 300 or p < -3900):
-        enable_kill_switch()
-        disable_kill_switch()
-        enable_kill_switch()
+        if(count ==2):
+            enable_kill_switch()
+            disable_kill_switch()
+            enable_kill_switch()
+            count = 1
+            
+        else:
+            count += 1
         
 
 
