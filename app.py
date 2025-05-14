@@ -1,7 +1,8 @@
 import os
 import requests
 import time
- 
+from datetime import datetime
+import pytz
 
 ACCESS_TOKEN = os.environ['token']
 BASE_URL = 'https://api.dhan.co'
@@ -13,6 +14,18 @@ HEADERS = {
 total_sellQTY = 0 
 count = 1
 
+
+
+ist = pytz.timezone('Asia/Kolkata')
+today = datetime.now(ist).date()
+
+# Track last deactivation date
+last_deactivated_date = None
+
+def is_after_8am_ist():
+    ist = pytz.timezone('Asia/Kolkata')
+    now_ist = datetime.now(ist)
+    return now_ist.hour >= 8
 
 
 def enable_kill_switch():
@@ -166,22 +179,30 @@ def close_all_positions():
 
 
 while True:
+    today = datetime.now(ist).date()
     time.sleep(15)
     c = get_today_trade_count()
     p = get_daily_pnl()
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
-    if(total_sellQTY >= 3000 or p < -3900):
-        if(count ==2):
-            close_all_positions()
-            time.sleep(15)
-            # enable_kill_switch()
-            # disable_kill_switch()
-            # enable_kill_switch()
-            count = 1
-            
-        else:
-            count += 1
+    if(is_after_8am_ist() and last_deactivated_date != today):
+        if(total_sellQTY >= 300 or p < -3900):
+            if(count ==2):
+                #print("Activated")
+                close_all_positions()
+                time.sleep(15)
+                enable_kill_switch()
+                disable_kill_switch()
+                enable_kill_switch()
+                count = 1
+                last_deactivated_date = today
+                
+                
+                
+            else:
+                count += 1
+    else:
+        print("Kill Switch activated for the day")
         
 
 
