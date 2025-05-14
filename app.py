@@ -67,7 +67,7 @@ def enable_kill_switch():
     if response.status_code == 200:
         print(" Kill switch ENABLED.")
     else:
-        print(" Failed to enable kill switch:", response.text)
+        send_telegram_message(" Failed to enable kill switch:", response.text)
 
 def disable_kill_switch():
     """ Disables kill switch """
@@ -76,7 +76,7 @@ def disable_kill_switch():
     if response.status_code == 200:
         print(" Kill switch DISABLED.")
     else:
-        print(" Failed to disable kill switch:", response.text)
+        send_telegram_message(" Failed to disable kill switch:", response.text)
 
 
 
@@ -152,7 +152,8 @@ def get_positions():
         return response.json()
     else:
         print("Error fetching positions:", response.text)
-        return []
+        send_telegram_message("Error fetching positions:", response.text)
+        return 'failed'
 
 def place_order(order_data):
     url = f"{BASE_URL}/orders"
@@ -161,10 +162,13 @@ def place_order(order_data):
         return response.json()
     else:
         print("Error placing order:", response.text)
-        return None
+        send_telegram_message("Error placing order:", response.text)
+        return 'failed'
 
 def close_all_positions():
     positions = get_positions()
+    if positions == 'failed':
+        return 'failed'
     #print("nabd")
     if not positions:
         print("No open positions.")
@@ -196,23 +200,36 @@ def close_all_positions():
             }
 
             response = place_order(order_data)
+            if response == 'failed':
+                return 'failed'
             print(f"Square-off response: {response}")
             time.sleep(1)  # avoid rate limits
 
 
 def cancel_pending_orders():
     # Fetch all orders
-    orders = dhan.get_order_list()
-    if(not orders.get('data')):
-        print("No Pending Orders")
+    try:
+        orders = dhan.get_order_list()
+        if(orders.get('status' == 'failure')):
+            return 'failed'
+            #send_telegram_message("Error in featching pending oredr list")
+        if(not orders.get('data')):
+            print("No Pending Orders")
 
-    for order in orders.get('data'):
-        print(order['status'])
-        if order.get("orderStatus") == "PENDING":
-            order_id = order.get("orderId")
-            print(f"Cancelling order: {order_id}")
-            response = dhan.cancel_order(order_id)
-            print(f"Response: {response}")
+        for order in orders.get('data'):
+            print(order['status'])
+            if order.get("orderStatus") == "PENDING":
+                order_id = order.get("orderId")
+                print(f"Cancelling order: {order_id}")
+                response = dhan.cancel_order(order_id)
+                if(response.get('status') ==  'failure'):
+                    return 'failed'
+                    #send_telegram_message("Error In Closing the pending orders")
+                print(f"Response: {response}")
+        
+    except Exception:
+        return 'failed'
+
 
 
 
@@ -228,7 +245,7 @@ while True:
     c = get_today_trade_count()
     p = get_daily_pnl()
 
-    if(p == 0 and flag == 1):
+    if(p <= -3000 and flag == 1):
         send_telegram_message("⚠️ Loss Alert: ₹3️⃣0️⃣0️⃣0️⃣ loss hit. Consider reviewing your trades.")
         flag = 0
     if(flag == 1 and p > 0):
@@ -239,17 +256,23 @@ while True:
     print("Total sell qty:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
-        if(total_sellQTY >= 300 or p  -3900):
+        if(total_sellQTY >= 300 or p < -3900):
             if(count ==2):
                 
-                print("Activated")
-                cancel_pending_orders()
+                #print("Activated")
+                r = cancel_pending_orders()
+                if(r == 'failed'):
+                    send_telegram_message("Error in cancelling the Pending orders")
+                    continue
                 time.sleep(10)
-                close_all_positions()
+                r2 = close_all_positions()
+                if(r2 == 'failed'):
+                    send_telegram_message("Error in closing the open positions")
+                    continue
                 time.sleep(10)
-                # enable_kill_switch()
-                # disable_kill_switch()
-                # enable_kill_switch()
+                enable_kill_switch()
+                disable_kill_switch()
+                enable_kill_switch()
                 count = 1
                 last_deactivated_date = today
                 send_telegram_message("Kill Switch activated for the day")
