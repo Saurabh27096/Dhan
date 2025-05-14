@@ -186,6 +186,7 @@ while True:
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
+        print("Eligible for deactivation")
         if(total_sellQTY >= 300 or p < -3900):
             if(count ==2):
                 #print("Activated")
