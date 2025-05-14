@@ -270,9 +270,9 @@ while True:
                     send_telegram_message("Error in closing the open positions")
                     continue
                 time.sleep(10)
-                enable_kill_switch()
-                disable_kill_switch()
-                enable_kill_switch()
+                # enable_kill_switch()
+                # disable_kill_switch()
+                # enable_kill_switch()
                 count = 1
                 last_deactivated_date = today
                 send_telegram_message("Kill Switch activated for the day")
@@ -284,7 +284,7 @@ while True:
         else:
             print("Loss limit OR quantity not crossed")
     else:
-        print("Kill Switch activated for the day")
+        print("Kill Switch activated for the dayy")
         
 
 
