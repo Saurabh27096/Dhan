@@ -179,6 +179,7 @@ def close_all_positions():
 
 
 while True:
+    print("***************************************************************************")
     today = datetime.now(ist).date()
     time.sleep(15)
     c = get_today_trade_count()
