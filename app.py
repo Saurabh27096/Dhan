@@ -6,13 +6,17 @@ import pytz
 from dhanhq import dhanhq
 
 ACCESS_TOKEN = os.environ['token']
+BOT_TOKEN = os.environ['BOT_TOKEN']
+CHAT_ID = os.environ['CHAT_ID']
+client_id = os.environ['client_id']
+
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
     'access-token': ACCESS_TOKEN,
     'Content-Type': 'application/json'
 }
 
-client_id = os.environ['client_id']
+
 dhan = dhanhq(client_id , ACCESS_TOKEN)  # Replace with your actual access token
 
 
@@ -31,6 +35,28 @@ def is_after_8am_ist():
     ist = pytz.timezone('Asia/Kolkata')
     now_ist = datetime.now(ist)
     return now_ist.hour >= 8
+
+
+# def is_trading_day():
+#     now = datetime.now()
+#     weekday = now.weekday()
+#     # 0 = Monday, ..., 6 = Sunday
+#     return weekday < 5  # True for Monday to Friday
+
+
+
+
+def send_telegram_message(message):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {
+        'chat_id': CHAT_ID,
+        'text': message
+    }
+    r = requests.post(url, data=payload)
+    if r.status_code == 200:
+        print("Telegram message sent.")
+    else:
+        print("Failed to send message:", r.text)
 
 
 def enable_kill_switch():
@@ -192,7 +218,7 @@ def cancel_pending_orders():
 
 
 
-
+flag = 1
 
 
 while True:
@@ -201,22 +227,32 @@ while True:
     time.sleep(10)
     c = get_today_trade_count()
     p = get_daily_pnl()
+
+    if(p == 0 and flag == 1):
+        send_telegram_message("⚠️ Loss Alert: ₹3️⃣0️⃣0️⃣0️⃣ loss hit. Consider reviewing your trades.")
+        flag = 0
+    if(flag == 1 and p > 0):
+        send_telegram_message("⚠️ Profit Alert: You are in Green from RED. Consider reviewing your trades.")
+        flag = 1
+
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
-        if(total_sellQTY >= 300 or p < -3900):
+        if(total_sellQTY >= 300 or p  -3900):
             if(count ==2):
-                #print("Activated")
+                
+                print("Activated")
                 cancel_pending_orders()
-                sleep(10)
+                time.sleep(10)
                 close_all_positions()
                 time.sleep(10)
-                enable_kill_switch()
-                disable_kill_switch()
-                enable_kill_switch()
+                # enable_kill_switch()
+                # disable_kill_switch()
+                # enable_kill_switch()
                 count = 1
                 last_deactivated_date = today
+                send_telegram_message("Kill Switch activated for the day")
                 
                 
                 
