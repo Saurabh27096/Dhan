@@ -202,6 +202,8 @@ while True:
                 
             else:
                 count += 1
+        else:
+            print("Loss limit OR quantity not crossed")
     else:
         print("Kill Switch activated for the day")
         
