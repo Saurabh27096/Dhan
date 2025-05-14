@@ -3,6 +3,7 @@ import requests
 import time
 from datetime import datetime
 import pytz
+from dhanhq import dhanhq
 
 ACCESS_TOKEN = os.environ['token']
 BASE_URL = 'https://api.dhan.co'
@@ -10,6 +11,10 @@ HEADERS = {
     'access-token': ACCESS_TOKEN,
     'Content-Type': 'application/json'
 }
+
+client_id = os.environ['client_id']
+dhan = dhanhq(client_id , ACCESS_TOKEN)  # Replace with your actual access token
+
 
 total_sellQTY = 0 
 count = 1
@@ -169,7 +174,19 @@ def close_all_positions():
             time.sleep(1)  # avoid rate limits
 
 
+def cancel_pending_orders():
+    # Fetch all orders
+    orders = dhan.get_order_list()
+    if(not orders.get('data')):
+        print("No Pending Orders")
 
+    for order in orders.get('data'):
+        print(order['status'])
+        if order.get("orderStatus") == "PENDING":
+            order_id = order.get("orderId")
+            print(f"Cancelling order: {order_id}")
+            response = dhan.cancel_order(order_id)
+            print(f"Response: {response}")
 
 
 
