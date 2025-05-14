@@ -284,7 +284,7 @@ while True:
         else:
             print("Loss limit OR quantity not crossed")
     else:
-        print("Kill Switch activated for the dayy")
+        print("Kill Switch activated for the dyy")
         
 
 
