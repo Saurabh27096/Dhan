@@ -5,10 +5,10 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = os.environ['token']
-BOT_TOKEN = os.environ['BOT_TOKEN']
-CHAT_ID = os.environ['CHAT_ID']
-client_id = os.environ['client_id']
+ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzQ5NjQ5OTkyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.LCLcfpnfLCGe_SKat1HgoX03_hwRAqXTR8PWY2-etBofqYBoksIIKxyRDQMiJVXD480BsxAKRunGzh3OoHf75Q'
+BOT_TOKEN = "7636078690:AAG2vq4Ler0TTnDewrNQfXiX6CSLFzZZMok"
+CHAT_ID = "922195607"
+client_id = "1103842512"
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
@@ -37,11 +37,11 @@ def is_after_8am_ist():
     return now_ist.hour >= 8
 
 
-# def is_trading_day():
-#     now = datetime.now()
-#     weekday = now.weekday()
-#     # 0 = Monday, ..., 6 = Sunday
-#     return weekday < 5  # True for Monday to Friday
+def is_trading_day():
+    now = datetime.now()
+    weekday = now.weekday()
+    # 0 = Monday, ..., 6 = Sunday
+    return weekday < 5  # True for Monday to Friday
 
 
 
@@ -239,6 +239,12 @@ flag = 1
 
 
 while True:
+
+    if not is_trading_day():
+        print("Not a trading day ENJOY")
+        time.sleep(60)
+        continue
+
     print("***************************************************************************")
     today = datetime.now(ist).date()
     time.sleep(10)
@@ -284,7 +290,7 @@ while True:
         else:
             print("Loss limit OR quantity not crossed")
     else:
-        print("Kill Switch activated for the dyy")
+        print("Kill Switch activated for the day")
         
 
 
