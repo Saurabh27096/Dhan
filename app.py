@@ -198,7 +198,7 @@ def cancel_pending_orders():
 while True:
     print("***************************************************************************")
     today = datetime.now(ist).date()
-    time.sleep(15)
+    time.sleep(10)
     c = get_today_trade_count()
     p = get_daily_pnl()
     print("Today PNL:" , p )
@@ -208,8 +208,10 @@ while True:
         if(total_sellQTY >= 300 or p < -3900):
             if(count ==2):
                 #print("Activated")
+                cancel_pending_orders()
+                sleep(10)
                 close_all_positions()
-                time.sleep(15)
+                time.sleep(10)
                 enable_kill_switch()
                 disable_kill_switch()
                 enable_kill_switch()
