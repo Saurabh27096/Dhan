@@ -10,6 +10,7 @@ BOT_TOKEN = os.environ['BOT_TOKEN']
 CHAT_ID = os.environ['CHAT_ID']
 client_id = os.environ['client_id']
 
+
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
     'access-token': ACCESS_TOKEN,
@@ -117,28 +118,46 @@ def get_daily_pnl():
 def get_today_trade_count():
     global total_sellQTY
     total_sellQTY = 0
-    url = f"{BASE_URL}/trades"
-    response = requests.get(url, headers=HEADERS)
-    if response.status_code == 200:
-        trades = response.json()
-        for trade in trades:
-            if(trade["transactionType"] == 'SELL'):
-                total_sellQTY += trade["tradedQuantity"]
+    total_trade = 0
+
+    try:
+        orders = dhan.get_order_list()
+        if(orders.get('status' == 'failure')):
+            return 'failed'
+            #send_telegram_message("Error in featching pending oredr list")
+        if(not orders.get('data')):
+            print("No Pending Orders")
+        # print(len(orders.get('data')))
+        # print(orders)
+        for order in orders.get('data'):
+            #print(order['orderStatus'])
+            if order.get("orderStatus") == 'TRADED':
+                if order.get('transactionType') == 'SELL':
+                    total_sellQTY += order.get('quantity')
+                total_trade += 1
+        return total_trade
+
+    except Exception:
+         print(f"Error fetching trade Count")
+
+
+#print(get_today_trade_count())
+
+    # url = f"{BASE_URL}/trades"
+    # response = requests.get(url, headers=HEADERS)
+    # if response.status_code == 200:
+    #     trades = response.json()
+    #     for trade in trades:
+    #         if(trade["transactionType"] == 'SELL'):
+    #             total_sellQTY += trade["tradedQuantity"]
     
-    # if(total_sellQTY == 300):
-    #     #print("DONE")
-    #     enable_kill_switch()
+    
+    #     trade_count = len(trades)
         
-
-
-
-        #print(json.dumps(trades))
-        trade_count = len(trades)
-        
-        return trade_count
-    else:
-        print(f"Error fetching trade book: {response.status_code} - {response.text}")
-        return 0
+    #     return trade_count
+    # else:
+    #     print(f"Error fetching trade book: {response.status_code} - {response.text}")
+    #     return 0
 
 
 
@@ -266,7 +285,7 @@ while True:
 
     print("Total trades executed today:" , c)
     print("Today PNL:" , p )
-    print("Total sell qty:" , total_sellQTY)
+    print("Total Quantity Traded:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
         if(total_sellQTY >= 300 or p < -3900):
@@ -289,7 +308,9 @@ while True:
                 enable_kill_switch()
                 count = 1
                 last_deactivated_date = today
-                send_telegram_message("Kill Switch activated for the day")
+                send_telegram_message("Kill Switch activated for the day \n 𝓔𝓷𝓳𝓸𝔂 𝓣𝓱𝓮 𝓓𝓪𝔂")
+
+                send_telegram_message(f"\n\nTrade Summary: \n Total PNL: {p} \n Total trade: {c} \n Total QTY: {total_sellQTY} \n\n")
                 
                 
                 
