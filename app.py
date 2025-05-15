@@ -308,7 +308,7 @@ while True:
     p = get_daily_pnl()
 
 
-    if(last_notification != today and is_after_4pm_ist):
+    if(last_notification != today and is_after_4pm_ist()):
         send_telegram_message(f"\n\nTrade Summary: \n Total PNL: {p} \n Total trade: {c} \n Total QTY: {total_sellQTY} \n\n")
         last_notification = today
 
