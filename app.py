@@ -5,10 +5,10 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzQ5NjQ5OTkyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.LCLcfpnfLCGe_SKat1HgoX03_hwRAqXTR8PWY2-etBofqYBoksIIKxyRDQMiJVXD480BsxAKRunGzh3OoHf75Q'
-BOT_TOKEN = "7636078690:AAG2vq4Ler0TTnDewrNQfXiX6CSLFzZZMok"
-CHAT_ID = "922195607"
-client_id = "1103842512"
+ACCESS_TOKEN = os.environ['token']
+BOT_TOKEN = os.environ['BOT_TOKEN']
+CHAT_ID = os.environ['CHAT_ID']
+client_id = os.environ['client_id']
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
@@ -30,6 +30,7 @@ today = datetime.now(ist).date()
 
 # Track last deactivation date
 last_deactivated_date = None
+last_profit_day = None
 
 def is_after_8am_ist():
     ist = pytz.timezone('Asia/Kolkata')
@@ -236,7 +237,7 @@ def cancel_pending_orders():
 
 
 flag = 1
-flag2 = 1
+
 
 while True:
 
@@ -251,9 +252,10 @@ while True:
     c = get_today_trade_count()
     p = get_daily_pnl()
 
-    if(p >= 2000 and flag2 == 1):
-        send_telegram_message("⚠️ Good Job: ₹20️⃣0️⃣0️⃣ Profit. ")
-        flag2 = 0
+    if(p >= 3000 and last_profit_day != today):
+        send_telegram_message("⚠️ Good Job:  ₹3️⃣0️⃣0️⃣0️⃣ Profit. ")
+        last_profit_day = today
+        
 
     if(p <= -3000 and flag == 1):
         send_telegram_message("⚠️ Loss Alert: ₹3️⃣0️⃣0️⃣0️⃣ loss hit. Consider reviewing your trades.")
