@@ -10,6 +10,8 @@ BOT_TOKEN = os.environ['BOT_TOKEN']
 CHAT_ID = os.environ['CHAT_ID']
 client_id = os.environ['client_id']
 
+BOT_TOKEN2 = os.environ['BOT_TOKEN2']
+CHAT_ID2 = os.environ['CHAT_ID2']
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
@@ -33,11 +35,17 @@ today = datetime.now(ist).date()
 last_deactivated_date = None
 last_profit_day = None
 last_notification = None
+last_sent_hour = -1
 
 def is_after_8am_ist():
     ist = pytz.timezone('Asia/Kolkata')
     now_ist = datetime.now(ist)
     return now_ist.hour >= 8
+
+def is_after_4pm_ist():
+    ist = pytz.timezone('Asia/Kolkata')
+    now_ist = datetime.now(ist)
+    return now_ist.hour >= 16
 
 
 def is_trading_day():
@@ -53,6 +61,18 @@ def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         'chat_id': CHAT_ID,
+        'text': message
+    }
+    r = requests.post(url, data=payload)
+    if r.status_code == 200:
+        print("")
+    else:
+        print("Failed to send message:", r.text)
+
+def health_chech_message(message):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN2}/sendMessage"
+    payload = {
+        'chat_id': CHAT_ID2,
         'text': message
     }
     r = requests.post(url, data=payload)
@@ -252,6 +272,13 @@ def cancel_pending_orders():
         return 'failed'
 
 
+def health_check():
+    global last_sent_hour
+    current_hour = datetime.now(ist).hour
+
+    if current_hour != last_sent_hour:
+        health_chech_message("🕐 Chal rha hu bhai \n . \n . \n")
+        last_sent_hour = current_hour
 
 
 
@@ -261,7 +288,10 @@ flag = 1
 
 while True:
 
+    health_check()
     today = datetime.now(ist).date()
+
+    
 
     if not is_trading_day():
         if(last_notification != today and is_after_8am_ist()):
@@ -276,6 +306,11 @@ while True:
     time.sleep(10)
     c = get_today_trade_count()
     p = get_daily_pnl()
+
+
+    if(last_notification != today and is_after_4pm_ist):
+        send_telegram_message(f"\n\nTrade Summary: \n Total PNL: {p} \n Total trade: {c} \n Total QTY: {total_sellQTY} \n\n")
+        last_notification = today
 
     if(p >= 3000 and last_profit_day != today):
         send_telegram_message("⚠️ Good Job:  ₹3️⃣0️⃣0️⃣0️⃣ Profit. ")
@@ -316,7 +351,7 @@ while True:
                 last_deactivated_date = today
                 send_telegram_message("Kill Switch activated for the day \n 𝓔𝓷𝓳𝓸𝔂 𝓣𝓱𝓮 𝓓𝓪𝔂")
 
-                send_telegram_message(f"\n\nTrade Summary: \n Total PNL: {p} \n Total trade: {c} \n Total QTY: {total_sellQTY} \n\n")
+                
                 
                 
                 
