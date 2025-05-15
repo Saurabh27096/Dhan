@@ -32,6 +32,7 @@ today = datetime.now(ist).date()
 # Track last deactivation date
 last_deactivated_date = None
 last_profit_day = None
+last_notification = None
 
 def is_after_8am_ist():
     ist = pytz.timezone('Asia/Kolkata')
@@ -260,13 +261,18 @@ flag = 1
 
 while True:
 
+    today = datetime.now(ist).date()
+
     if not is_trading_day():
-        print("Not a trading day ENJOY")
-        time.sleep(60)
+        if(last_notification != today and is_after_8am_ist()):
+            print("Not a trading day ENJOY")
+            last_notification = today
+        send_telegram_message("Not a trading day ENJOY")
+        time.sleep(3600)
         continue
 
     print("***************************************************************************")
-    today = datetime.now(ist).date()
+    
     time.sleep(10)
     c = get_today_trade_count()
     p = get_daily_pnl()
