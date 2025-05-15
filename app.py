@@ -217,7 +217,7 @@ def cancel_pending_orders():
             print("No Pending Orders")
 
         for order in orders.get('data'):
-            print(order['status'])
+            print(order['orderStatus'])
             if order.get("orderStatus") == "PENDING":
                 order_id = order.get("orderId")
                 print(f"Cancelling order: {order_id}")
@@ -236,7 +236,7 @@ def cancel_pending_orders():
 
 
 flag = 1
-
+flag2 = 1
 
 while True:
 
@@ -250,6 +250,10 @@ while True:
     time.sleep(10)
     c = get_today_trade_count()
     p = get_daily_pnl()
+
+    if(p >= 2000 and flag2 == 1):
+        send_telegram_message("⚠️ Good Job: ₹20️⃣0️⃣0️⃣ Profit. ")
+        flag2 = 0
 
     if(p <= -3000 and flag == 1):
         send_telegram_message("⚠️ Loss Alert: ₹3️⃣0️⃣0️⃣0️⃣ loss hit. Consider reviewing your trades.")
