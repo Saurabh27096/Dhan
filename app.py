@@ -5,10 +5,10 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = os.environ['token']
-BOT_TOKEN = os.environ['BOT_TOKEN']
-CHAT_ID = os.environ['CHAT_ID']
-client_id = os.environ['client_id']
+ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzQ5NjQ5OTkyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.LCLcfpnfLCGe_SKat1HgoX03_hwRAqXTR8PWY2-etBofqYBoksIIKxyRDQMiJVXD480BsxAKRunGzh3OoHf75Q'
+BOT_TOKEN = "7636078690:AAG2vq4Ler0TTnDewrNQfXiX6CSLFzZZMok"
+CHAT_ID = "922195607"
+client_id = "1103842512"
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
@@ -55,7 +55,7 @@ def send_telegram_message(message):
     }
     r = requests.post(url, data=payload)
     if r.status_code == 200:
-        print("Telegram message sent.")
+        print("")
     else:
         print("Failed to send message:", r.text)
 
@@ -134,7 +134,7 @@ def get_today_trade_count():
 
         #print(json.dumps(trades))
         trade_count = len(trades)
-        print(f"Total trades executed today: {trade_count}")
+        
         return trade_count
     else:
         print(f"Error fetching trade book: {response.status_code} - {response.text}")
@@ -260,15 +260,17 @@ while True:
     if(p <= -3000 and flag == 1):
         send_telegram_message("⚠️ Loss Alert: ₹3️⃣0️⃣0️⃣0️⃣ loss hit. Consider reviewing your trades.")
         flag = 0
-    if(flag == 1 and p > 0):
+    if(flag == 0 and p > 0):
         send_telegram_message("⚠️ Profit Alert: You are in Green from RED. Consider reviewing your trades.")
         flag = 1
 
+    print("Total trades executed today:" , c)
     print("Today PNL:" , p )
     print("Total sell qty:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
         if(total_sellQTY >= 300 or p < -3900):
+            print("All Coditions are True for diactivation")
             if(count ==2):
                 
                 #print("Activated")
