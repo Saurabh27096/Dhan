@@ -350,7 +350,7 @@ while True:
         if(last_notification != today and is_after_8am_ist()):
             print("Not a trading day ENJOY")
             last_notification = today
-        send_telegram_message("Not a trading day ENJOY")
+            send_telegram_message("Not a trading day ENJOY")
         time.sleep(3600)
         continue
 
