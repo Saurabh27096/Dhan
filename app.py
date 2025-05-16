@@ -143,7 +143,7 @@ def get_today_trade_count():
 
     try:
         orders = dhan.get_order_list()
-        print(orders)
+        #print(orders)
         if(orders.get('status' == 'failure')):
             return 'failed'
             #send_telegram_message("Error in featching pending oredr list")
