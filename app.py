@@ -143,6 +143,7 @@ def get_today_trade_count():
 
     try:
         orders = dhan.get_order_list()
+        print(orders)
         if(orders.get('status' == 'failure')):
             return 'failed'
             #send_telegram_message("Error in featching pending oredr list")
@@ -185,26 +186,52 @@ def get_today_trade_count():
 #######################################################################################
 
 
+def get_order_by_correlation_ID(ID):
+    url = f"{BASE_URL}/v2/orders/external/{ID}"
+    response = requests.get(url, headers=HEADERS)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error fetching Order Status by CorrelationID:", response.text)
+        send_telegram_message(f"Error fetching Order Status by CorrelationID: {response.text}")
+        return 'failed'
+
+
 
 def get_positions():
-    url = f"{BASE_URL}/positions"
+    url = f"{BASE_URL}/v2/positions"
     response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
         return response.json()
     else:
         print("Error fetching positions:", response.text)
-        send_telegram_message("Error fetching positions:", response.text)
+        send_telegram_message(f"Error fetching positions: {response.text}")
         return 'failed'
 
 def place_order(order_data):
-    url = f"{BASE_URL}/orders"
+    url = f"{BASE_URL}/v2/orders"
+    
     response = requests.post(url, json=order_data, headers=HEADERS)
     if response.status_code == 200:
+        co = get_order_by_correlation_ID(order_data["correlationId"])
+        if co == 'failed':
+            return 'failed'
+        
+        status = co['orderStatus']
+        while(status != "TRADED"):
+            status = get_order_by_correlation_ID(order_data["correlationId"])['orderStatus']
+            print("Cancellation order for open position placed but Pending")
+            send_telegram_message("Cancellation order for open position placed but Pending")
+            time.sleep(.1)
+        
+
         return response.json()
     else:
         print("Error placing order:", response.text)
-        send_telegram_message("Error placing order:", response.text)
+        send_telegram_message(f"Error placing order:\n {response.text}")
         return 'failed'
+
+
 
 def close_all_positions():
     positions = get_positions()
@@ -218,33 +245,56 @@ def close_all_positions():
     for pos in positions:
         #print(pos)
         net_qty = int(pos.get("netQty", 0))
-        print("Positions are already closed")
+        
         if net_qty != 0:
+            now_ist = datetime.now(ist)
+            # Format the time string
+            correlationId = now_ist.strftime("log_%Y%m%d_%H%M%S")
+            #print(correlationId)
+            dhanClientId = pos["dhanClientId"]
             security_id = pos["securityId"]
             trading_symbol = pos["tradingSymbol"]
             product_type = pos["productType"]
             exchange_segment = pos["exchangeSegment"]
+            drvExpiryDate = pos["drvExpiryDate"]
+            drvOptionType = pos["drvOptionType"]
+            drvStrikePrice = pos["drvStrikePrice"]
 
             print(f"Closing position for: {trading_symbol}, Qty: {net_qty}")
+            send_telegram_message(f"Closing position for: {trading_symbol}, Qty: {net_qty}")
 
-            # Place opposite order to square off
-            order_data = {
-                "transactionType": "SELL" if net_qty > 0 else "BUY",
-                "securityId": security_id,
-                "quantity": abs(net_qty),
-                "orderType": "MARKET",
-                "productType": product_type,
-                "exchangeSegment": exchange_segment,
-                "orderValidity": "DAY",
-                "price": 0,
-                "tag": "AutoClose"
-            }
+            order_data  =  {
+                "dhanClientId":dhanClientId,
+                "correlationId":correlationId,
+                "transactionType":"SELL" if net_qty > 0 else "BUY",
+                "exchangeSegment":exchange_segment,
+                "productType":"INTRADAY",
+                "orderType":"MARKET",
+                "validity":"DAY",
+                "tradingSymbol": trading_symbol,
+                "securityId":security_id,
+                "quantity":abs(net_qty),
+                "disclosedQuantity":abs(net_qty),
+                "price":float(0),
+                "triggerPrice":float(0),
+                "afterMarketOrder":False,
+                "amoTime":"OPEN_30",
+                "boProfitValue":None,
+                "boStopLossValue": None,
+                "drvExpiryDate": drvExpiryDate,
+                "drvOptionType": drvOptionType,
+                "drvStrikePrice": drvStrikePrice
+             }
+
 
             response = place_order(order_data)
             if response == 'failed':
                 return 'failed'
             print(f"Square-off response: {response}")
+            send_telegram_message(f"Square-off response: {response}")
             time.sleep(1)  # avoid rate limits
+#close_all_positions()
+#print(get_order_by_correlation_ID("log_20250516_224724"))
 
 
 def cancel_pending_orders():
@@ -267,9 +317,12 @@ def cancel_pending_orders():
                     return 'failed'
                     #send_telegram_message("Error In Closing the pending orders")
                 print(f"Response: {response}")
+                send_telegram_message(f"Cancelled Pending Order: {response}")
         
     except Exception:
         return 'failed'
+
+#cancel_pending_orders()
 
 
 def health_check():
@@ -338,12 +391,12 @@ while True:
                 if(r == 'failed'):
                     send_telegram_message("Error in cancelling the Pending orders")
                     continue
-                time.sleep(10)
+                time.sleep(1)
                 r2 = close_all_positions()
                 if(r2 == 'failed'):
                     send_telegram_message("Error in closing the open positions")
                     continue
-                time.sleep(10)
+                time.sleep(1)
                 enable_kill_switch()
                 disable_kill_switch()
                 enable_kill_switch()
