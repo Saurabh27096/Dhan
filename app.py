@@ -293,7 +293,7 @@ def close_all_positions():
                 return 'failed'
             print(f"Square-off response: {response}")
             send_telegram_message(f"Square-off response: {response}")
-            time.sleep(1)  # avoid rate limits
+            time.sleep(.5)  # avoid rate limits
 #close_all_positions()
 #print(get_order_by_correlation_ID("log_20250516_224724"))
 
@@ -357,7 +357,7 @@ while True:
 
     print("***************************************************************************")
     
-    time.sleep(10)
+    time.sleep(2)
     c = get_today_trade_count()
     if(c == None):
         send_telegram_message(f"Error in fetching trade Count")
