@@ -161,6 +161,7 @@ def get_today_trade_count():
 
     except Exception:
          print(f"Error fetching trade Count")
+         return None
 
 
 #print(get_today_trade_count())
@@ -346,7 +347,7 @@ while True:
 
     
 
-    if not is_trading_day():
+    if (is_trading_day() == False):
         if(last_notification != today and is_after_8am_ist()):
             print("Not a trading day ENJOY")
             last_notification = today
@@ -358,7 +359,15 @@ while True:
     
     time.sleep(10)
     c = get_today_trade_count()
+    if(c == None):
+        send_telegram_message(f"Error in fetching trade Count")
+        continue
+
     p = get_daily_pnl()
+    if (p == None):
+        print("Error to featch daily_pnl")
+        send_telegram_message("Error to featch daily PNL")
+        continue
 
 
     if(last_notification != today and is_after_4pm_ist()):
