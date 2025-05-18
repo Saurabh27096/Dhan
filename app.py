@@ -20,7 +20,7 @@ HEADERS = {
 }
 
 
-dhan = dhanhq(client_id , ACCESS_TOKEN)  # Replace with your actual access token
+dhan = dhanhq(client_id , ACCESS_TOKEN)  # 
 
 
 total_sellQTY = 0 
