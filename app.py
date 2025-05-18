@@ -49,7 +49,7 @@ def is_after_4pm_ist():
 
 
 def is_trading_day():
-    now = datetime.now()
+    now = datetime.now(ist)
     weekday = now.weekday()
     # 0 = Monday, ..., 6 = Sunday
     return weekday < 5  # True for Monday to Friday
