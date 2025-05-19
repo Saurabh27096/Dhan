@@ -391,7 +391,7 @@ while True:
     print("Total Quantity Traded:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
-        if(total_sellQTY >= 450 or p < -5000):
+        if(total_sellQTY >= 375 or p < -4500):
             print("All Coditions are True for diactivation")
             if(count ==2):
                 
