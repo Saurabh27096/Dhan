@@ -11,7 +11,7 @@ CHAT_ID = os.environ['CHAT_ID']
 client_id = os.environ['client_id']
 
 BOT_TOKEN2 = os.environ['BOT_TOKEN2']
-CHAT_ID2 = os.environ['CHAT_ID2']
+CHAT_ID2 = os.environ['CHAT_ID2'] 
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
