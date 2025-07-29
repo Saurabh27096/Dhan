@@ -373,7 +373,7 @@ while True:
         send_telegram_message("Error to featch daily PNL")
         continue
 
-    if(last_notification2 != today and is_after_8am_ist):
+    if(last_notification2 != today and is_after_8am_ist()):
         send_telegram_message(f"\n\n Welcome to Magical World \n   1 — 𝕋𝕣𝕒𝕕𝕖 𝕔𝕙𝕠𝕡𝕠𝕥 𝕛𝕒𝕪𝕒 𝕔𝕙𝕒𝕝𝕖𝕘𝕒, 𝕝𝕖𝕜𝕚𝕟 𝔽𝕆𝕄𝕆 𝕖𝕟𝕥𝕣𝕪 𝕟𝕙𝕚 𝕝𝕖𝕟𝕚 𝕙. \n 2 — 𝕋𝕒𝕜𝕖 𝕥𝕣𝕒𝕕𝕖 𝕠𝕟𝕝𝕪 𝕨𝕙𝕖𝕟 𝟚𝟘 𝔼𝕄𝔸 𝕓𝕣𝕖𝕒𝕜𝕤.  \n\n")
         last_notification2 = today
 
