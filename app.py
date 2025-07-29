@@ -5,13 +5,15 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = os.environ['token']
-BOT_TOKEN = os.environ['BOT_TOKEN']
-CHAT_ID = os.environ['CHAT_ID']
-client_id = os.environ['client_id']
+ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzQ5NjQ5OTkyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.LCLcfpnfLCGe_SKat1HgoX03_hwRAqXTR8PWY2-etBofqYBoksIIKxyRDQMiJVXD480BsxAKRunGzh3OoHf75Q'
+BOT_TOKEN = "7636078690:AAG2vq4Ler0TTnDewrNQfXiX6CSLFzZZMok"
+CHAT_ID = "922195607"
+client_id = "1103842512"
 
-BOT_TOKEN2 = os.environ['BOT_TOKEN2']
-CHAT_ID2 = os.environ['CHAT_ID2'] 
+BOT_TOKEN2 = "7938821634:AAGJHm9wuzDZMjHgOYv2e4OYMDloPWboXhI"
+CHAT_ID2 = "922195607"
+
+
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
