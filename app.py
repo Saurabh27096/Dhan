@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzQ5NjQ5OTkyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.LCLcfpnfLCGe_SKat1HgoX03_hwRAqXTR8PWY2-etBofqYBoksIIKxyRDQMiJVXD480BsxAKRunGzh3OoHf75Q'
+ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzU2NDA0MzIyLCJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJ3ZWJob29rVXJsIjoiIiwiZGhhbkNsaWVudElkIjoiMTEwMzg0MjUxMiJ9.g-06-9BnuvAvyKYzgj9VIIWF1EfJ6MA0f_AqnOQziZjnU6pOtPntHOKrtHJP_sEyi4gxJjK0t8pfk1nxrm5K2g'
 BOT_TOKEN = "7636078690:AAG2vq4Ler0TTnDewrNQfXiX6CSLFzZZMok"
 CHAT_ID = "922195607"
 client_id = "1103842512"
@@ -45,10 +45,10 @@ def is_after_8am_ist():
     now_ist = datetime.now(ist)
     return now_ist.hour >= 8
 
-def is_after_4pm_ist():
+def is_after_3pm_ist():
     ist = pytz.timezone('Asia/Kolkata')
     now_ist = datetime.now(ist)
-    return now_ist.hour >= 16
+    return now_ist.hour >= 15
 
 
 def is_trading_day():
@@ -373,7 +373,7 @@ while True:
         continue
 
 
-    if(last_notification != today and is_after_4pm_ist()):
+    if(last_notification != today and is_after_3pm_ist()):
         send_telegram_message(f"\n\nTrade Summary: \n Total PNL: {p} \n Total trade: {c} \n Total QTY: {total_sellQTY} \n\n")
         last_notification = today
 
@@ -394,7 +394,7 @@ while True:
     print("Total Quantity Traded:" , total_sellQTY)
     if(is_after_8am_ist() and last_deactivated_date != today):
         print("Eligible for deactivation")
-        if(total_sellQTY >= 300 or p < -4800):
+        if(total_sellQTY >= 300 or p < -5100):
             print("All Coditions are True for diactivation")
             if(count ==2):
                 
