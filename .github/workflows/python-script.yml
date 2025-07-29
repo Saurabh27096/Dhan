@@ -1,0 +1,27 @@
+name: Run Python Script on Schedule
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # runs every 30 minutes (adjust as needed)
+  workflow_dispatch:       # allows manual triggering
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'  # or whichever version you use
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt || echo "No requirements.txt found"
+
+      - name: Run script
+        run: |
+          python script.py
