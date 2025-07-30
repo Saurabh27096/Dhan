@@ -2,7 +2,7 @@ name: Run Python Script on Schedule
 
 on:
   schedule:
-    - cron: '45 3 * * *'  # Runs at 9:15 AM IST (IST = UTC+5:30)
+    - cron: '13 4 * * *'  # Runs at 9:15 AM IST (IST = UTC+5:30)
   workflow_dispatch:       # allows manual triggering
 
 jobs:
