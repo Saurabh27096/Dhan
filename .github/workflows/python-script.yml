@@ -9,6 +9,14 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    env:  # Pass secrets as env variables
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        BOT_TOKEN2: ${{ secrets.BOT_TOKEN2 }}
+        CHAT_ID: ${{ secrets.CHAT_ID }}
+        CHAT_ID2: ${{ secrets.CHAT_ID2 }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
