@@ -13,7 +13,12 @@ client_id = os.getenv('CLIENT_ID')
 BOT_TOKEN2 = os.getenv('BOT_TOKEN2')
 CHAT_ID2 = os.getenv('CHAT_ID2')
 
-
+print(ACCESS_TOKEN)
+print(BOT_TOKEN)
+print(CHAT_ID)
+print(client_id)
+print(BOT_TOKEN2)
+print(CHAT_ID2)
 
 BASE_URL = 'https://api.dhan.co'
 HEADERS = {
