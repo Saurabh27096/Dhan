@@ -5,10 +5,10 @@ from datetime import datetime
 import pytz
 from dhanhq import dhanhq
 
-ACCESS_TOKEN = os.getenv('token')
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
-client_id = os.getenv('client_id')
+client_id = os.getenv('CLIENT_ID')
 
 BOT_TOKEN2 = os.getenv('BOT_TOKEN2')
 CHAT_ID2 = os.getenv('CHAT_ID2')
