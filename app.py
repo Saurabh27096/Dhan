@@ -222,17 +222,18 @@ def place_order(order_data):
     url = f"{BASE_URL}/v2/orders"
     
     response = requests.post(url, json=order_data, headers=HEADERS)
+    time.sleep(2)
     if response.status_code == 200:
         co = get_order_by_correlation_ID(order_data["correlationId"])
         if co == 'failed':
             return 'failed'
         
         status = co['orderStatus']
-        while(status != "TRADED"):
-            status = get_order_by_correlation_ID(order_data["correlationId"])['orderStatus']
-            print("Cancellation order for open position placed but Pending")
-            send_telegram_message("Cancellation order for open position placed but Pending")
-            time.sleep(.1)
+        # while(status != "TRADED"):
+        #     status = get_order_by_correlation_ID(order_data["correlationId"])['orderStatus']
+        #     print("Cancellation order for open position placed but Pending")
+        #     send_telegram_message("Cancellation order for open position placed but Pending")
+        #     time.sleep(.1)
         
 
         return response.json()
@@ -415,9 +416,25 @@ while True:
                     continue
                 time.sleep(1)
                 r2 = close_all_positions()
+                print("saurabh")
                 if(r2 == 'failed'):
                     send_telegram_message("Error in closing the open positions")
                     continue
+                #check if there is pending positions
+                positions = get_positions()
+                if positions == 'failed':
+                    continue
+                #print("nabd")
+                if not positions:
+                    print("No open positions.")
+                else:
+                    for pos in positions:
+                        #print(pos)
+                        net_qty = int(pos.get("netQty", 0))
+                        
+                        if net_qty != 0:
+                            send_telegram_message("Running poisition can't activate KILL SWITCH")
+                            continue
                 time.sleep(1)
                 enable_kill_switch()
                 disable_kill_switch()
