@@ -32,4 +32,10 @@ jobs:
 
       - name: Run script
         run: |
-          python app.py
+          python python app.py > output.log 2>&1
+
+      - name: Upload log file
+        uses: actions/upload-artifact@v3
+        with:
+          name: script-output
+          path: output.log
